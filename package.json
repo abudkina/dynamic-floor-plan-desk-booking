@@ -13,7 +13,8 @@
     "test:e2e": "node ./node_modules/playwright/cli.js test",
     "test:all": "npm test && npm run test:e2e",
     "screenshots": "node ./scripts/capture-screenshots.mjs",
-    "lighthouse:check": "node ./scripts/lighthouse-check.mjs"
+    "lighthouse:check": "node ./scripts/lighthouse-check.mjs",
+    "build:pages": "node ./scripts/build-pages.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
