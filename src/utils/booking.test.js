@@ -6,8 +6,11 @@ import {
   filterDesksByType,
   filterTodayBookings,
   hashString,
+  heatIntensity,
+  bookingsList,
   occupancyStats,
   pickQuote,
+  zoneOccupancy,
 } from '../utils/booking.js';
 import {
   todayKey,
@@ -169,5 +172,33 @@ describe('booking logic', () => {
 
   it('todayKey форматирует дату', () => {
     expect(todayKey(new Date('2026-08-05T23:00:00'))).toBe('2026-08-05');
+  });
+
+  it('строит список броней и зоны', () => {
+    const desks = [
+      { id: 'w1', label: 'Окно-1', type: DESK_TYPES.WINDOW },
+      { id: 'q1', label: 'Тихая-1', type: DESK_TYPES.QUIET },
+    ];
+    const map = {
+      w1: {
+        deskId: 'w1',
+        name: 'Оля',
+        time: '11:00',
+        date: '2026-08-05',
+        quote: 'Я работаю!',
+        avatarSeed: 1,
+        createdAt: now.toISOString(),
+      },
+    };
+    const list = bookingsList(map, desks);
+    expect(list).toHaveLength(1);
+    expect(list[0].deskLabel).toBe('Окно-1');
+
+    const zones = zoneOccupancy(map, desks);
+    const windowZone = zones.find((z) => z.type === DESK_TYPES.WINDOW);
+    expect(windowZone?.занято).toBe(1);
+    expect(windowZone?.процент).toBe(100);
+    expect(heatIntensity(map, 'w1')).toBe(1);
+    expect(heatIntensity(map, 'q1')).toBe(0);
   });
 });

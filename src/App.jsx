@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { AdminPanel } from './components/AdminPanel.jsx';
 import { BookingModal } from './components/BookingModal.jsx';
-import { FilterBar } from './components/FilterBar.jsx';
-import { FloorPlan } from './components/FloorPlan.jsx';
-import { OccupancyTooltip } from './components/OccupancyTooltip.jsx';
+import { Nav } from './components/Nav.jsx';
 import { DESKS } from './data/desks.js';
+import { useHashRoute } from './hooks/useHashRoute.js';
+import { AnalyticsPage } from './pages/AnalyticsPage.jsx';
+import { BookingsPage } from './pages/BookingsPage.jsx';
+import { MapPage } from './pages/MapPage.jsx';
 import { logger } from './services/logger.js';
 import {
   clearBookingsStorage,
@@ -18,13 +19,15 @@ import {
   createBooking,
   occupancyStats,
 } from './utils/booking.js';
+import { ROUTES } from './utils/routes.js';
 import { computeStatsAsync } from './workers/workerClient.js';
 import './styles/app.css';
 
 /**
- * Корневое приложение: карта офиса и бронирование столов.
+ * Корневое приложение: три страницы + бронирование.
  */
 export default function App() {
+  const [route, navigate] = useHashRoute();
   const [bookings, setBookings] = useState(() => loadBookings());
   const [filter, setFilter] = useState('all');
   const [selectedDesk, setSelectedDesk] = useState(null);
@@ -113,6 +116,12 @@ export default function App() {
     return { ok: true };
   };
 
+  const handleCancelById = (deskId) => {
+    const next = cancelBooking(bookings, deskId);
+    if (!persist(next)) return;
+    logger.info('Бронь отменена из списка', { deskId });
+  };
+
   const handleAdminReset = () => {
     const confirmed = window.confirm(
       'Сбросить все бронирования на сегодня? Это действие нельзя отменить.',
@@ -151,77 +160,50 @@ export default function App() {
     }
   };
 
-  const handleDeskLeave = () => {
-    setTooltip(null);
-  };
-
   return (
     <div className="приложение">
       <header className="шапка">
         <h1 className="шапка__бренд">План офиса</h1>
         <p className="шапка__подзаголовок">
-          Интерактивная карта: кликните по столу, чтобы забронировать место на
-          день. Зелёный — свободно, красный — занято.
+          Карта, список броней и аналитика загрузки — без сервера, данные в
+          браузере.
         </p>
-        <div className="статистика" aria-live="polite">
-          <span>
-            Свободно: <strong>{stats.свободно}</strong>
-          </span>
-          <span>
-            Занято: <strong>{stats.занято}</strong>
-          </span>
-          <span>
-            Загрузка: <strong>{stats.процент}%</strong>
-          </span>
-        </div>
-        <button
-          type="button"
-          className="админ-триггер"
-          aria-label="Открыть режим администратора"
-          title="Режим администратора"
-          onClick={() => setAdminVisible((v) => !v)}
-        />
+        <Nav route={route} onNavigate={navigate} />
       </header>
 
-      <FilterBar value={filter} onChange={setFilter} />
-
-      <AdminPanel
-        visible={adminVisible}
-        onReset={handleAdminReset}
-        onHide={() => setAdminVisible(false)}
-      />
-
       <main>
-        <h2 className="визуально-скрыто">Карта рабочих мест</h2>
-        <div style={{ position: 'relative' }}>
-          <FloorPlan
+        {route === ROUTES.MAP ? (
+          <MapPage
             desks={DESKS}
             bookings={bookings}
-            activeFilter={filter}
+            filter={filter}
+            onFilterChange={setFilter}
+            stats={stats}
+            adminVisible={adminVisible}
+            onAdminToggle={() => setAdminVisible((v) => !v)}
+            onAdminReset={handleAdminReset}
+            onAdminHide={() => setAdminVisible(false)}
             onDeskClick={handleDeskClick}
             onDeskHover={handleDeskHover}
-            onDeskLeave={handleDeskLeave}
+            onDeskLeave={() => setTooltip(null)}
+            tooltip={tooltip}
+            avatarUrl={avatarUrl}
           />
-          {tooltip ? (
-            <OccupancyTooltip
-              booking={tooltip.booking}
-              avatarUrl={avatarUrl}
-              style={tooltip.style}
-            />
-          ) : null}
-        </div>
-      </main>
+        ) : null}
 
-      <div className="легенда" aria-hidden="true">
-        <span className="легенда__пункт">
-          <span className="легенда__цвет легенда__цвет--свободно" />
-          Свободно
-        </span>
-        <span className="легенда__пункт">
-          <span className="легенда__цвет легенда__цвет--занято" />
-          Занято
-        </span>
-      </div>
+        {route === ROUTES.BOOKINGS ? (
+          <BookingsPage
+            desks={DESKS}
+            bookings={bookings}
+            onCancel={handleCancelById}
+            onGoToMap={() => navigate(ROUTES.MAP)}
+          />
+        ) : null}
+
+        {route === ROUTES.ANALYTICS ? (
+          <AnalyticsPage desks={DESKS} bookings={bookings} stats={stats} />
+        ) : null}
+      </main>
 
       <footer className="подвал">
         Данные хранятся только в вашем браузере · брони на один день

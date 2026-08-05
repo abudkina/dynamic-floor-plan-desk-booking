@@ -60,3 +60,24 @@ test('мобильная ширина 320px', async ({ page }) => {
   await page.getByTestId('стол-m1').click();
   await expect(page.getByRole('dialog')).toBeVisible();
 });
+
+test('страницы: мои бронирования и аналитика', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('стол-w1').click();
+  await page.getByLabel('Ваше имя').fill('Ирина');
+  await page.getByLabel('Время начала').fill('14:00');
+  await page.getByRole('button', { name: 'Подтвердить бронирование' }).click();
+
+  await page.getByRole('button', { name: 'Мои бронирования' }).click();
+  await expect(page.getByRole('heading', { name: 'Мои бронирования' })).toBeVisible();
+  await expect(page.getByLabel('Список бронирований')).toContainText('Ирина');
+
+  await page.getByRole('button', { name: 'Аналитика загрузки' }).click();
+  await expect(page.getByRole('heading', { name: 'Аналитика загрузки' })).toBeVisible();
+  await expect(page.getByLabel('Тепловая карта столов')).toBeVisible();
+  await expect(page.getByTestId('тепло-w1')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Мои бронирования' }).click();
+  await page.getByRole('button', { name: 'Освободить стол Окно-1' }).click();
+  await expect(page.getByText('Пока нет бронирований на сегодня.')).toBeVisible();
+});

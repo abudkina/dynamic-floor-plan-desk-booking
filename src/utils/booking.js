@@ -155,3 +155,63 @@ export function filterDesksByType(desks, filter) {
   if (!filter || filter === 'all') return desks;
   return desks.filter((desk) => desk.type === filter);
 }
+
+/**
+ * Список броней с метаданными столов, сортировка по времени.
+ * @param {BookingsMap} bookings
+ * @param {Array<{ id: string, label: string, type: string }>} desks
+ * @returns {Array<Booking & { deskLabel: string, deskType: string }>}
+ */
+export function bookingsList(bookings, desks) {
+  const byId = new Map(desks.map((d) => [d.id, d]));
+  return Object.values(bookings || {})
+    .map((booking) => {
+      const desk = byId.get(booking.deskId);
+      return {
+        ...booking,
+        deskLabel: desk?.label || booking.deskId,
+        deskType: desk?.type || '',
+      };
+    })
+    .sort((a, b) => String(a.time).localeCompare(String(b.time), 'ru'));
+}
+
+/**
+ * Загрузка по зонам (для аналитики).
+ * @param {BookingsMap} bookings
+ * @param {Array<{ id: string, type: string }>} desks
+ * @returns {Array<{ type: string, всего: number, занято: number, свободно: number, процент: number }>}
+ */
+export function zoneOccupancy(bookings, desks) {
+  /** @type {Record<string, { всего: number, занято: number }>} */
+  const zones = {};
+
+  for (const desk of desks) {
+    if (!zones[desk.type]) zones[desk.type] = { всего: 0, занято: 0 };
+    zones[desk.type].всего += 1;
+    if (bookings?.[desk.id]) zones[desk.type].занято += 1;
+  }
+
+  return Object.entries(zones).map(([type, stats]) => {
+    const свободно = Math.max(0, stats.всего - stats.занято);
+    const процент =
+      stats.всего === 0 ? 0 : Math.round((stats.занято / stats.всего) * 100);
+    return {
+      type,
+      всего: stats.всего,
+      занято: stats.занято,
+      свободно,
+      процент,
+    };
+  });
+}
+
+/**
+ * Интенсивность «тепла» стола: 0 свободно, 1 занято.
+ * @param {BookingsMap} bookings
+ * @param {string} deskId
+ * @returns {0 | 1}
+ */
+export function heatIntensity(bookings, deskId) {
+  return bookings?.[deskId] ? 1 : 0;
+}

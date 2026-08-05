@@ -448,6 +448,157 @@ select {
   outline: 2px solid var(--цвет-фокус);
 }
 
+.навигация {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+
+.навигация__пункт {
+  appearance: none;
+  border: 2px solid var(--цвет-сетка);
+  background: var(--цвет-поверхность);
+  color: var(--цвет-текст);
+  padding: 0.45rem 0.65rem;
+  cursor: pointer;
+  box-shadow: var(--тень);
+  font-size: 0.85rem;
+}
+
+.навигация__пункт:hover {
+  border-color: var(--цвет-фокус);
+}
+
+.навигация__пункт:focus-visible {
+  outline: 3px solid var(--цвет-фокус);
+  outline-offset: 2px;
+}
+
+.навигация__пункт[aria-current='page'] {
+  background: var(--цвет-акцент);
+  color: var(--цвет-акцент-текст);
+  border-color: var(--цвет-акцент);
+}
+
+.страница {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  position: relative;
+}
+
+.страница__заголовок {
+  margin: 0;
+  font-family: var(--шрифт-пиксель);
+  font-size: clamp(0.65rem, 2.4vw, 0.85rem);
+  color: var(--цвет-текст);
+  line-height: 1.5;
+}
+
+.страница__описание {
+  margin: 0;
+  color: var(--цвет-приглушённый);
+  font-size: 0.95rem;
+  max-width: 42rem;
+}
+
+.пустой-блок {
+  border: 2px dashed var(--цвет-сетка);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.пустой-блок p {
+  margin: 0;
+  color: var(--цвет-приглушённый);
+}
+
+.список-броней {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.список-броней__пункт {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--цвет-поверхность);
+  border: 2px solid var(--цвет-сетка);
+  box-shadow: var(--тень);
+}
+
+.список-броней__стол {
+  margin: 0;
+  font-family: var(--шрифт-пиксель);
+  font-size: 0.6rem;
+  color: var(--цвет-акцент);
+  line-height: 1.5;
+}
+
+.список-броней__мета {
+  margin: 0.3rem 0 0;
+  color: var(--цвет-приглушённый);
+  font-size: 0.85rem;
+}
+
+.зоны-статистика {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.зоны-статистика__пункт {
+  background: var(--цвет-поверхность);
+  border: 2px solid var(--цвет-сетка);
+  padding: 0.75rem;
+  box-shadow: var(--тень);
+}
+
+.зоны-статистика__шапка {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.зоны-статистика__полоса {
+  height: 12px;
+  background: #0f1220;
+  border: 1px solid var(--цвет-сетка);
+}
+
+.зоны-статистика__полоса > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #38b764, #f9c22b, #e43b44);
+  max-width: 100%;
+}
+
+.зоны-статистика__мета {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  color: var(--цвет-приглушённый);
+}
+
+@media (min-width: 768px) {
+  .зоны-статистика {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 .админ-панель {
   border: 2px dashed var(--цвет-акцент);
   padding: 0.75rem;
