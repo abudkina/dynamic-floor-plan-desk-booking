@@ -41,13 +41,9 @@ npm run preview
 
 Сайт: https://abudkina.github.io/dynamic-floor-plan-desk-booking/
 
-Не открывайте сырой `index.html` из репозитория — браузер ищет `/src/main.jsx` и получает 404. Нужна сборка Vite.
+Не открывайте сырой `index.html` из ветки `main` — браузер ищет `/src/main.jsx` и получает 404. Нужна сборка Vite.
 
-Деплой идёт автоматически из GitHub Actions при пуше в `main` (workflow «Деплой на GitHub Pages»).
-
-В настройках репозитория: **Settings → Pages → Source → GitHub Actions**.
-
-Локальная сборка под Pages:
+Публикация: ветка `gh-pages` (содержимое `dist` после `npm run build:pages`).
 
 ```bash
 npm run build:pages
