@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="420" viewBox="0 0 720 420">
+  <rect width="720" height="420" fill="#0f1220"/>
+  <text x="36" y="48" fill="#f9c22b" font-family="Courier New, monospace" font-size="22">План офиса</text>
+  <text x="36" y="78" fill="#94a1b2" font-family="Georgia, serif" font-size="14">Бронирование стола одним кликом</text>
+  <g>
+    <rect x="40" y="110" width="80" height="56" fill="#38b764">
+      <animate attributeName="fill" values="#38b764;#e43b44;#e43b44;#38b764" dur="4s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="140" y="110" width="80" height="56" fill="#38b764"/>
+    <rect x="240" y="110" width="80" height="56" fill="#e43b44"/>
+    <rect x="40" y="190" width="80" height="56" fill="#38b764"/>
+    <rect x="140" y="190" width="80" height="56" fill="#38b764"/>
+    <rect x="240" y="190" width="80" height="56" fill="#38b764"/>
+  </g>
+  <rect x="400" y="120" width="280" height="200" fill="#1a1c2c" stroke="#f9c22b" stroke-width="3">
+    <animate attributeName="opacity" values="0;0;1;1;0" dur="4s" repeatCount="indefinite"/>
+  </rect>
+  <text x="420" y="160" fill="#f9c22b" font-family="Courier New, monospace" font-size="14">
+    <animate attributeName="opacity" values="0;0;1;1;0" dur="4s" repeatCount="indefinite"/>
+    Забронировать стол
+  </text>
+  <text x="420" y="200" fill="#f4f4f4" font-family="Georgia, serif" font-size="13">
+    <animate attributeName="opacity" values="0;0;1;1;0" dur="4s" repeatCount="indefinite"/>
+    Имя: Анна
+  </text>
+  <text x="420" y="230" fill="#f4f4f4" font-family="Georgia, serif" font-size="13">
+    <animate attributeName="opacity" values="0;0;1;1;0" dur="4s" repeatCount="indefinite"/>
+    Время: 10:00
+  </text>
+</svg>

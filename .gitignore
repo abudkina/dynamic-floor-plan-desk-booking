@@ -1,0 +1,20 @@
+# Зависимости
+node_modules/
+dist/
+coverage/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Система
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.*
+
+# Редакторы
+.idea/
+.vscode/
+*.swp
