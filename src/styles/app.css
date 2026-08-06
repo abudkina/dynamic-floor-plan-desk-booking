@@ -35,6 +35,13 @@ body,
 body {
   font-family: var(--шрифт-текст);
   background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      #ffffff04 3px,
+      #ffffff04 4px
+    ),
     radial-gradient(ellipse at top, #1e2440 0%, transparent 55%),
     linear-gradient(180deg, #0f1220 0%, #15192b 100%);
   background-attachment: fixed;
@@ -170,6 +177,8 @@ select {
   min-width: 280px;
   height: auto;
   shape-rendering: crispEdges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 .стол {
@@ -261,11 +270,13 @@ select {
 }
 
 .подсказка__аватар {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   image-rendering: pixelated;
+  image-rendering: crisp-edges;
   border: 2px solid var(--цвет-сетка);
   flex-shrink: 0;
+  background: #0b0d16;
 }
 
 .подсказка__имя {

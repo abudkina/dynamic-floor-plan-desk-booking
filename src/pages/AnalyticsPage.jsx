@@ -1,4 +1,5 @@
 import { DESK_TYPE_LABELS } from '../data/constants.js';
+import { PixelDeskSprite, PixelMapBackdrop } from '../components/PixelArt.jsx';
 import { heatIntensity, zoneOccupancy } from '../utils/booking.js';
 
 /**
@@ -65,39 +66,26 @@ export function AnalyticsPage({ desks, bookings, stats }) {
         <svg
           className="карта-svg"
           viewBox="0 0 320 200"
+          shapeRendering="crispEdges"
           role="img"
           aria-label="Тепловая карта занятости столов"
         >
           <title>Тепловая карта</title>
-          <rect x="0" y="0" width="320" height="200" fill="#15192b" />
-          <rect
-            x="4"
-            y="4"
-            width="312"
-            height="192"
-            fill="none"
-            stroke="#3d4466"
-            strokeWidth="4"
-          />
+          <PixelMapBackdrop showLabels={false} />
           {desks.map((desk) => {
             const intensity = heatIntensity(bookings, desk.id);
             const booking = bookings[desk.id];
+            const fill = heatColor(intensity);
             return (
               <g key={desk.id} data-testid={`тепло-${desk.id}`}>
-                <rect
-                  x={desk.x}
-                  y={desk.y}
-                  width={desk.width}
-                  height={desk.height}
-                  fill={heatColor(intensity)}
-                  stroke="#0b0d16"
-                  strokeWidth="1"
-                >
-                  <title>
-                    {desk.label}:{' '}
-                    {booking ? `занят (${booking.name})` : 'свободен'}
-                  </title>
-                </rect>
+                <title>
+                  {desk.label}: {booking ? `занят (${booking.name})` : 'свободен'}
+                </title>
+                <PixelDeskSprite
+                  desk={desk}
+                  occupied={Boolean(booking)}
+                  heatFill={fill}
+                />
               </g>
             );
           })}

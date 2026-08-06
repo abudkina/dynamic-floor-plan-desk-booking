@@ -1,5 +1,5 @@
 /**
- * Генерация 8-bit аватаров через OffscreenCanvas (с запасным путём на Canvas).
+ * Генерация 8-bit аватаров: рисуем 8×8, увеличиваем без сглаживания.
  */
 
 import { logger } from '../services/logger.js';
@@ -16,7 +16,6 @@ const PALETTE = [
 ];
 
 /**
- * Псевдослучайный генератор на основе seed.
  * @param {number} seed
  * @returns {() => number}
  */
@@ -29,49 +28,104 @@ function createRng(seed) {
 }
 
 /**
- * Нарисовать пиксельный аватар на контексте.
+ * Матрица 8×8 пикселей персонажа.
+ * @param {number} seed
+ * @returns {string[][]}
+ */
+function buildPixelGrid(seed) {
+  const rng = createRng(seed || 1);
+  const skin = PALETTE[Math.floor(rng() * PALETTE.length)];
+  const hair = PALETTE[Math.floor(rng() * PALETTE.length)];
+  const shirt = PALETTE[Math.floor(rng() * PALETTE.length)];
+  const bg = '#1a1c2c';
+  const eye = '#f4f4f4';
+  const pupil = '#0b0d16';
+
+  /** @type {string[][]} */
+  const grid = Array.from({ length: 8 }, () => Array.from({ length: 8 }, () => bg));
+
+  // волосы
+  for (let x = 1; x <= 6; x += 1) grid[0][x] = hair;
+  for (let x = 1; x <= 6; x += 1) grid[1][x] = hair;
+  if (rng() > 0.4) grid[1][0] = hair;
+  if (rng() > 0.4) grid[1][7] = hair;
+
+  // лицо
+  for (let y = 2; y <= 4; y += 1) {
+    for (let x = 2; x <= 5; x += 1) grid[y][x] = skin;
+  }
+
+  // глаза: белок сверху, зрачок снизу
+  grid[2][2] = eye;
+  grid[2][5] = eye;
+  grid[3][2] = pupil;
+  grid[3][5] = pupil;
+
+  // рот
+  if (rng() > 0.5) {
+    grid[4][3] = '#a32c32';
+    grid[4][4] = '#a32c32';
+  } else {
+    grid[4][3] = pupil;
+    grid[4][4] = pupil;
+  }
+
+  // шея / плечи
+  grid[5][3] = skin;
+  grid[5][4] = skin;
+  for (let x = 1; x <= 6; x += 1) grid[6][x] = shirt;
+  for (let x = 2; x <= 5; x += 1) grid[7][x] = shirt;
+  if (rng() > 0.5) grid[6][3] = '#f4f4f4';
+  if (rng() > 0.5) grid[6][4] = '#f4f4f4';
+
+  return grid;
+}
+
+/**
  * @param {OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D} ctx
  * @param {number} size
  * @param {number} seed
  */
 function paintAvatar(ctx, size, seed) {
-  const rng = createRng(seed || 1);
-  const cell = Math.max(1, Math.floor(size / 8));
-  const bg = '#1a1c2c';
-  const skin = PALETTE[Math.floor(rng() * PALETTE.length)];
-  const accent = PALETTE[Math.floor(rng() * PALETTE.length)];
+  const grid = buildPixelGrid(seed);
+  const tiny =
+    typeof OffscreenCanvas !== 'undefined'
+      ? new OffscreenCanvas(8, 8)
+      : (() => {
+          const c = document.createElement('canvas');
+          c.width = 8;
+          c.height = 8;
+          return c;
+        })();
 
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, size, size);
+  const tinyCtx = tiny.getContext('2d');
+  if (!tinyCtx) throw new Error('Контекст аватара недоступен');
 
-  // Симметричное лицо 8×8
-  for (let y = 1; y < 7; y += 1) {
-    for (let x = 1; x < 4; x += 1) {
-      if (rng() > 0.35) {
-        ctx.fillStyle = rng() > 0.7 ? accent : skin;
-        ctx.fillRect(x * cell, y * cell, cell, cell);
-        ctx.fillRect((7 - x) * cell, y * cell, cell, cell);
-      }
+  for (let y = 0; y < 8; y += 1) {
+    for (let x = 0; x < 8; x += 1) {
+      tinyCtx.fillStyle = grid[y][x];
+      tinyCtx.fillRect(x, y, 1, 1);
     }
   }
 
-  // Глаза
-  ctx.fillStyle = '#f4f4f4';
-  ctx.fillRect(2 * cell, 3 * cell, cell, cell);
-  ctx.fillRect(5 * cell, 3 * cell, cell, cell);
-  ctx.fillStyle = '#1a1c2c';
-  ctx.fillRect(2 * cell + cell / 3, 3 * cell + cell / 3, cell / 3, cell / 3);
-  ctx.fillRect(5 * cell + cell / 3, 3 * cell + cell / 3, cell / 3, cell / 3);
+  ctx.imageSmoothingEnabled = false;
+  // @ts-expect-error совместимость
+  if ('mozImageSmoothingEnabled' in ctx) ctx.mozImageSmoothingEnabled = false;
+  ctx.clearRect(0, 0, size, size);
+  ctx.drawImage(tiny, 0, 0, 8, 8, 0, 0, size, size);
 }
 
 /**
- * Создать data URL аватара.
  * @param {number} seed
  * @param {number} [size=64]
  * @returns {Promise<string>}
  */
 export async function generateAvatarDataUrl(seed, size = 64) {
   try {
+    if (typeof process !== 'undefined' && process.env?.VITEST) {
+      return fallbackSvg(seed);
+    }
+
     if (typeof OffscreenCanvas !== 'undefined') {
       const canvas = new OffscreenCanvas(size, size);
       const ctx = canvas.getContext('2d');
@@ -79,11 +133,6 @@ export async function generateAvatarDataUrl(seed, size = 64) {
       paintAvatar(ctx, size, seed);
       const blob = await canvas.convertToBlob({ type: 'image/png' });
       return await blobToDataUrl(blob);
-    }
-
-    // В тестах (jsdom) canvas недоступен — сразу запасной SVG
-    if (typeof process !== 'undefined' && process.env?.VITEST) {
-      return fallbackSvg(seed);
     }
 
     if (typeof document !== 'undefined') {
@@ -97,7 +146,7 @@ export async function generateAvatarDataUrl(seed, size = 64) {
           return canvas.toDataURL('image/png');
         }
       } catch {
-        /* jsdom / старые браузеры — запасной SVG */
+        /* запасной SVG */
       }
     }
 
@@ -122,12 +171,19 @@ function blobToDataUrl(blob) {
 }
 
 /**
- * Запасной SVG-аватар без canvas.
  * @param {number} seed
  * @returns {string}
  */
 function fallbackSvg(seed) {
-  const color = PALETTE[seed % PALETTE.length];
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" shape-rendering="crispEdges"><rect width="8" height="8" fill="#1a1c2c"/><rect x="2" y="1" width="4" height="5" fill="${color}"/><rect x="2" y="3" width="1" height="1" fill="#f4f4f4"/><rect x="5" y="3" width="1" height="1" fill="#f4f4f4"/></svg>`;
+  const grid = buildPixelGrid(seed);
+  const rects = [];
+  for (let y = 0; y < 8; y += 1) {
+    for (let x = 0; x < 8; x += 1) {
+      rects.push(
+        `<rect x="${x}" y="${y}" width="1" height="1" fill="${grid[y][x]}"/>`,
+      );
+    }
+  }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" shape-rendering="crispEdges">${rects.join('')}</svg>`;
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
