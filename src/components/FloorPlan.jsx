@@ -1,8 +1,8 @@
 import { DESK_TYPE_LABELS } from '../data/constants.js';
-import { PixelDeskSprite, PixelMapBackdrop } from './PixelArt.jsx';
+import { ModernDeskSprite, ModernMapBackdrop } from './OfficeMap.jsx';
 
 /**
- * SVG-план офиса в жёстком 8-bit стиле.
+ * SVG-план офиса в современном стиле.
  */
 export function FloorPlan({
   desks,
@@ -17,7 +17,6 @@ export function FloorPlan({
       <svg
         className="карта-svg"
         viewBox="0 0 320 200"
-        shapeRendering="crispEdges"
         role="img"
         aria-label="План офиса со столами для бронирования"
       >
@@ -27,7 +26,7 @@ export function FloorPlan({
           на стол, чтобы забронировать или освободить.
         </desc>
 
-        <PixelMapBackdrop />
+        <ModernMapBackdrop />
 
         {desks.map((desk) => {
           const booking = bookings[desk.id];
@@ -72,11 +71,11 @@ export function FloorPlan({
               }}
               onBlur={() => onDeskLeave()}
             >
-              <PixelDeskSprite desk={desk} occupied={occupied} />
+              <ModernDeskSprite desk={desk} occupied={occupied} />
               <text
                 className="стол__метка"
                 x={desk.x + desk.width / 2}
-                y={desk.y + desk.height - 1}
+                y={desk.y + desk.height - 3}
                 textAnchor="middle"
               >
                 {desk.label.replace(/^(Окно|Тихая|Перег)-/, '')}

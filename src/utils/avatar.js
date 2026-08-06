@@ -1,24 +1,17 @@
 /**
- * Генерация 8-bit аватаров: рисуем 8×8, увеличиваем без сглаживания.
+ * Современные аватары: градиент + инициалы на canvas/SVG.
  */
 
 import { logger } from '../services/logger.js';
 
-const PALETTE = [
-  '#38b764',
-  '#3cbcfc',
-  '#f9c22b',
-  '#e43b44',
-  '#b55088',
-  '#5b6ee1',
-  '#73eff7',
-  '#a7f070',
+const GRADIENTS = [
+  ['#6366f1', '#8b5cf6'],
+  ['#0ea5e9', '#6366f1'],
+  ['#10b981', '#0ea5e9'],
+  ['#f59e0b', '#ef4444'],
+  ['#ec4899', '#8b5cf6'],
 ];
 
-/**
- * @param {number} seed
- * @returns {() => number}
- */
 function createRng(seed) {
   let state = seed >>> 0;
   return () => {
@@ -27,58 +20,8 @@ function createRng(seed) {
   };
 }
 
-/**
- * Матрица 8×8 пикселей персонажа.
- * @param {number} seed
- * @returns {string[][]}
- */
-function buildPixelGrid(seed) {
-  const rng = createRng(seed || 1);
-  const skin = PALETTE[Math.floor(rng() * PALETTE.length)];
-  const hair = PALETTE[Math.floor(rng() * PALETTE.length)];
-  const shirt = PALETTE[Math.floor(rng() * PALETTE.length)];
-  const bg = '#1a1c2c';
-  const eye = '#f4f4f4';
-  const pupil = '#0b0d16';
-
-  /** @type {string[][]} */
-  const grid = Array.from({ length: 8 }, () => Array.from({ length: 8 }, () => bg));
-
-  // волосы
-  for (let x = 1; x <= 6; x += 1) grid[0][x] = hair;
-  for (let x = 1; x <= 6; x += 1) grid[1][x] = hair;
-  if (rng() > 0.4) grid[1][0] = hair;
-  if (rng() > 0.4) grid[1][7] = hair;
-
-  // лицо
-  for (let y = 2; y <= 4; y += 1) {
-    for (let x = 2; x <= 5; x += 1) grid[y][x] = skin;
-  }
-
-  // глаза: белок сверху, зрачок снизу
-  grid[2][2] = eye;
-  grid[2][5] = eye;
-  grid[3][2] = pupil;
-  grid[3][5] = pupil;
-
-  // рот
-  if (rng() > 0.5) {
-    grid[4][3] = '#a32c32';
-    grid[4][4] = '#a32c32';
-  } else {
-    grid[4][3] = pupil;
-    grid[4][4] = pupil;
-  }
-
-  // шея / плечи
-  grid[5][3] = skin;
-  grid[5][4] = skin;
-  for (let x = 1; x <= 6; x += 1) grid[6][x] = shirt;
-  for (let x = 2; x <= 5; x += 1) grid[7][x] = shirt;
-  if (rng() > 0.5) grid[6][3] = '#f4f4f4';
-  if (rng() > 0.5) grid[6][4] = '#f4f4f4';
-
-  return grid;
+function pickGradient(seed) {
+  return GRADIENTS[seed % GRADIENTS.length];
 }
 
 /**
@@ -87,39 +30,36 @@ function buildPixelGrid(seed) {
  * @param {number} seed
  */
 function paintAvatar(ctx, size, seed) {
-  const grid = buildPixelGrid(seed);
-  const tiny =
-    typeof OffscreenCanvas !== 'undefined'
-      ? new OffscreenCanvas(8, 8)
-      : (() => {
-          const c = document.createElement('canvas');
-          c.width = 8;
-          c.height = 8;
-          return c;
-        })();
+  const [c1, c2] = pickGradient(seed);
+  const rng = createRng(seed);
+  const cx = size / 2;
+  const cy = size / 2;
+  const r = size / 2;
 
-  const tinyCtx = tiny.getContext('2d');
-  if (!tinyCtx) throw new Error('Контекст аватара недоступен');
+  const grad = ctx.createLinearGradient(0, 0, size, size);
+  grad.addColorStop(0, c1);
+  grad.addColorStop(1, c2);
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fill();
 
-  for (let y = 0; y < 8; y += 1) {
-    for (let x = 0; x < 8; x += 1) {
-      tinyCtx.fillStyle = grid[y][x];
-      tinyCtx.fillRect(x, y, 1, 1);
-    }
-  }
+  // декоративный блик
+  ctx.fillStyle = 'rgba(255,255,255,0.22)';
+  ctx.beginPath();
+  ctx.ellipse(cx - r * 0.15, cy - r * 0.2, r * 0.35, r * 0.25, -0.5, 0, Math.PI * 2);
+  ctx.fill();
 
-  ctx.imageSmoothingEnabled = false;
-  // @ts-expect-error совместимость
-  if ('mozImageSmoothingEnabled' in ctx) ctx.mozImageSmoothingEnabled = false;
-  ctx.clearRect(0, 0, size, size);
-  ctx.drawImage(tiny, 0, 0, 8, 8, 0, 0, size, size);
+  // абстрактная «буква» из seed
+  const symbols = 'АБВГДЕЖИКЛМНОПРСТУФХЦЧШ';
+  const letter = symbols[Math.floor(rng() * symbols.length)];
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `600 ${Math.floor(size * 0.42)}px system-ui, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(letter, cx, cy + 1);
 }
 
-/**
- * @param {number} seed
- * @param {number} [size=64]
- * @returns {Promise<string>}
- */
 export async function generateAvatarDataUrl(seed, size = 64) {
   try {
     if (typeof process !== 'undefined' && process.env?.VITEST) {
@@ -157,10 +97,6 @@ export async function generateAvatarDataUrl(seed, size = 64) {
   }
 }
 
-/**
- * @param {Blob} blob
- * @returns {Promise<string>}
- */
 function blobToDataUrl(blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -170,20 +106,10 @@ function blobToDataUrl(blob) {
   });
 }
 
-/**
- * @param {number} seed
- * @returns {string}
- */
 function fallbackSvg(seed) {
-  const grid = buildPixelGrid(seed);
-  const rects = [];
-  for (let y = 0; y < 8; y += 1) {
-    for (let x = 0; x < 8; x += 1) {
-      rects.push(
-        `<rect x="${x}" y="${y}" width="1" height="1" fill="${grid[y][x]}"/>`,
-      );
-    }
-  }
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" shape-rendering="crispEdges">${rects.join('')}</svg>`;
+  const [c1, c2] = pickGradient(seed);
+  const symbols = 'АБВГДЕЖИКЛМНОПРСТУФХЦЧШ';
+  const letter = symbols[seed % symbols.length];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/></linearGradient></defs><circle cx="32" cy="32" r="32" fill="url(#g)"/><text x="32" y="36" text-anchor="middle" fill="#fff" font-size="26" font-family="system-ui,sans-serif" font-weight="600">${letter}</text></svg>`;
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }

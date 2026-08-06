@@ -33,15 +33,15 @@ export function MapPage({
         свободно, красный — занято.
       </p>
 
-      <div className="статистика" aria-live="polite">
-        <span>
-          Свободно: <strong>{stats.свободно}</strong>
+      <div className="статистика-чипы" aria-live="polite">
+        <span className="статистика-чип">
+          Свободно <strong>{stats.свободно}</strong>
         </span>
-        <span>
-          Занято: <strong>{stats.занято}</strong>
+        <span className="статистика-чип">
+          Занято <strong>{stats.занято}</strong>
         </span>
-        <span>
-          Загрузка: <strong>{stats.процент}%</strong>
+        <span className="статистика-чип">
+          Загрузка <strong>{stats.процент}%</strong>
         </span>
       </div>
 

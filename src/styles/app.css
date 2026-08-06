@@ -1,22 +1,29 @@
 :root {
-  --цвет-фон: #0f1220;
-  --цвет-поверхность: #1a1c2c;
-  --цвет-сетка: #262b44;
-  --цвет-текст: #f4f4f4;
-  --цвет-приглушённый: #94a1b2;
-  --цвет-свободно: #38b764;
-  --цвет-свободно-тень: #257a45;
-  --цвет-занято: #e43b44;
-  --цвет-занято-тень: #a32c32;
-  --цвет-акцент: #f9c22b;
-  --цвет-акцент-текст: #1a1c2c;
-  --цвет-фокус: #3cbcfc;
-  --цвет-ошибка: #ff6b6b;
-  --цвет-окно: #73eff7;
-  --радиус: 0;
-  --шрифт-пиксель: 'Courier New', 'Lucida Console', monospace;
-  --шрифт-текст: Georgia, 'Times New Roman', serif;
-  --тень: 4px 4px 0 #00000055;
+  --цвет-фон: #f1f5f9;
+  --цвет-поверхность: #ffffff;
+  --цвет-поверхность-2: #f8fafc;
+  --цвет-граница: #e2e8f0;
+  --цвет-граница-2: #cbd5e1;
+  --цвет-текст: #0f172a;
+  --цвет-приглушённый: #64748b;
+  --цвет-свободно: #22c55e;
+  --цвет-свободно-мягкий: #dcfce7;
+  --цвет-занято: #ef4444;
+  --цвет-занято-мягкий: #fee2e2;
+  --цвет-акцент: #6366f1;
+  --цвет-акцент-hover: #4f46e5;
+  --цвет-акцент-мягкий: #eef2ff;
+  --цвет-акцент-текст: #ffffff;
+  --цвет-фокус: #6366f1;
+  --цвет-ошибка: #ef4444;
+  --радиус-sm: 8px;
+  --радиус: 12px;
+  --радиус-lg: 16px;
+  --радиус-xl: 20px;
+  --шрифт: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --тень-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --тень: 0 4px 16px rgba(15, 23, 42, 0.08);
+  --тень-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
 }
 
 *,
@@ -33,21 +40,14 @@ body,
 }
 
 body {
-  font-family: var(--шрифт-текст);
+  font-family: var(--шрифт);
   background:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 3px,
-      #ffffff04 3px,
-      #ffffff04 4px
-    ),
-    radial-gradient(ellipse at top, #1e2440 0%, transparent 55%),
-    linear-gradient(180deg, #0f1220 0%, #15192b 100%);
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(99, 102, 241, 0.12), transparent),
+    var(--цвет-фон);
   background-attachment: fixed;
   color: var(--цвет-текст);
-  line-height: 1.5;
-  image-rendering: pixelated;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
 
 img {
@@ -65,25 +65,28 @@ select {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: 0.75rem;
-  gap: 0.75rem;
-  max-width: 1100px;
+  padding: 1rem;
+  gap: 1.25rem;
+  max-width: 1120px;
   margin: 0 auto;
 }
 
 .шапка {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  position: relative;
+  gap: 0.75rem;
+  background: var(--цвет-поверхность);
+  border: 1px solid var(--цвет-граница);
+  border-radius: var(--радиус-lg);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--тень-sm);
 }
 
 .шапка__бренд {
-  font-family: var(--шрифт-пиксель);
-  font-size: clamp(0.7rem, 2.8vw, 1rem);
-  color: var(--цвет-акцент);
-  letter-spacing: 0.02em;
-  text-shadow: 2px 2px 0 #000;
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--цвет-текст);
   margin: 0;
 }
 
@@ -91,20 +94,36 @@ select {
   margin: 0;
   color: var(--цвет-приглушённый);
   font-size: 0.95rem;
-  max-width: 42rem;
+  max-width: 36rem;
 }
 
 .статистика {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1rem;
-  font-size: 0.9rem;
-  color: var(--цвет-приглушённый);
+  gap: 0.5rem;
 }
 
 .статистика strong {
   color: var(--цвет-текст);
   font-weight: 600;
+}
+
+.статистика-чипы {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.статистика-чип {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  background: var(--цвет-поверхность-2);
+  border: 1px solid var(--цвет-граница);
+  border-radius: 999px;
+  font-size: 0.875rem;
+  color: var(--цвет-приглушённый);
 }
 
 .панель-фильтров {
@@ -115,29 +134,32 @@ select {
 }
 
 .панель-фильтров__метка {
-  font-size: 0.85rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   color: var(--цвет-приглушённый);
   margin-right: 0.25rem;
 }
 
 .чип {
   appearance: none;
-  border: 2px solid var(--цвет-сетка);
+  border: 1px solid var(--цвет-граница);
   background: var(--цвет-поверхность);
   color: var(--цвет-текст);
-  padding: 0.45rem 0.7rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
   cursor: pointer;
-  box-shadow: var(--тень);
-  transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .чип:hover {
-  border-color: var(--цвет-фокус);
-  transform: translate(-1px, -1px);
+  border-color: var(--цвет-акцент);
+  background: var(--цвет-акцент-мягкий);
 }
 
 .чип:focus-visible {
-  outline: 3px solid var(--цвет-фокус);
+  outline: 2px solid var(--цвет-фокус);
   outline-offset: 2px;
 }
 
@@ -149,23 +171,9 @@ select {
 
 .карта-обёртка {
   position: relative;
-  background:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 7px,
-      #ffffff06 7px,
-      #ffffff06 8px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 7px,
-      #ffffff06 7px,
-      #ffffff06 8px
-    ),
-    var(--цвет-поверхность);
-  border: 3px solid var(--цвет-сетка);
+  background: var(--цвет-поверхность);
+  border: 1px solid var(--цвет-граница);
+  border-radius: var(--радиус-lg);
   box-shadow: var(--тень);
   overflow: auto;
   -webkit-overflow-scrolling: touch;
@@ -176,14 +184,11 @@ select {
   width: 100%;
   min-width: 280px;
   height: auto;
-  shape-rendering: crispEdges;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
 }
 
 .стол {
   cursor: pointer;
-  transition: filter 0.15s ease;
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
 .стол:focus {
@@ -196,31 +201,23 @@ select {
 }
 
 .стол:hover {
-  filter: brightness(1.12);
+  transform: scale(1.04);
 }
 
 .стол--скрыт {
-  opacity: 0.18;
+  opacity: 0.2;
   pointer-events: none;
 }
 
 .стол__корпус {
-  stroke: #0b0d16;
-  stroke-width: 1;
-}
-
-.стол--свободно .стол__корпус {
-  fill: var(--цвет-свободно);
-}
-
-.стол--занято .стол__корпус {
-  fill: var(--цвет-занято);
+  transition: fill 0.15s ease;
 }
 
 .стол__метка {
-  fill: #0b0d16;
-  font-family: var(--шрифт-пиксель);
-  font-size: 4px;
+  fill: #ffffff;
+  font-family: var(--шрифт);
+  font-size: 5px;
+  font-weight: 600;
   pointer-events: none;
   user-select: none;
 }
@@ -236,13 +233,13 @@ select {
 .легенда__пункт {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
 }
 
 .легенда__цвет {
-  width: 14px;
-  height: 14px;
-  border: 1px solid #000;
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
   display: inline-block;
 }
 
@@ -259,50 +256,49 @@ select {
   z-index: 20;
   pointer-events: none;
   background: var(--цвет-поверхность);
-  border: 3px solid var(--цвет-акцент);
-  box-shadow: var(--тень);
-  padding: 0.6rem;
-  width: min(220px, calc(100% - 1rem));
+  border: 1px solid var(--цвет-граница);
+  border-radius: var(--радиус);
+  box-shadow: var(--тень-lg);
+  padding: 0.75rem;
+  width: min(240px, calc(100% - 1rem));
   display: flex;
-  gap: 0.6rem;
+  gap: 0.75rem;
   align-items: flex-start;
-  animation: появление 0.18s ease;
+  animation: появление 0.2s ease;
 }
 
 .подсказка__аватар {
-  width: 48px;
-  height: 48px;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  border: 2px solid var(--цвет-сетка);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   flex-shrink: 0;
-  background: #0b0d16;
+  object-fit: cover;
 }
 
 .подсказка__имя {
   margin: 0;
-  font-family: var(--шрифт-пиксель);
-  font-size: 0.55rem;
-  color: var(--цвет-акцент);
-  line-height: 1.4;
-}
-
-.подсказка__цитата {
-  margin: 0.35rem 0 0;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 600;
   color: var(--цвет-текст);
 }
 
-.подсказка__время {
+.подсказка__цитата {
   margin: 0.25rem 0 0;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--цвет-приглушённый);
+  font-style: italic;
+}
+
+.подсказка__время {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
   color: var(--цвет-приглушённый);
 }
 
 @keyframes появление {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -313,7 +309,8 @@ select {
 .оверлей {
   position: fixed;
   inset: 0;
-  background: rgba(8, 10, 18, 0.72);
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -323,53 +320,58 @@ select {
 }
 
 .модалка {
-  width: min(420px, 100%);
+  width: min(440px, 100%);
   background: var(--цвет-поверхность);
-  border: 3px solid var(--цвет-сетка);
-  box-shadow: var(--тень);
-  padding: 1rem;
+  border: 1px solid var(--цвет-граница);
+  border-radius: var(--радиус-xl);
+  box-shadow: var(--тень-lg);
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
   max-height: min(90vh, 560px);
   overflow: auto;
 }
 
 .модалка__заголовок {
   margin: 0;
-  font-family: var(--шрифт-пиксель);
-  font-size: 0.7rem;
-  color: var(--цвет-акцент);
-  line-height: 1.5;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--цвет-текст);
 }
 
 .модалка__описание {
   margin: 0;
   color: var(--цвет-приглушённый);
-  font-size: 0.9rem;
+  font-size: 0.925rem;
 }
 
 .поле {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.4rem;
 }
 
 .поле label {
-  font-size: 0.85rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   color: var(--цвет-текст);
 }
 
 .поле input {
-  background: #0f1220;
-  border: 2px solid var(--цвет-сетка);
+  background: var(--цвет-поверхность-2);
+  border: 1px solid var(--цвет-граница);
+  border-radius: var(--радиус-sm);
   color: var(--цвет-текст);
-  padding: 0.65rem 0.7rem;
+  padding: 0.7rem 0.85rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .поле input:focus-visible {
-  outline: 3px solid var(--цвет-фокус);
-  outline-offset: 1px;
+  outline: none;
+  border-color: var(--цвет-акцент);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
 .поле input[aria-invalid='true'] {
@@ -379,21 +381,22 @@ select {
 .ошибка {
   margin: 0;
   color: var(--цвет-ошибка);
-  font-size: 0.85rem;
+  font-size: 0.875rem;
 }
 
 .тост {
   position: fixed;
   left: 50%;
-  bottom: 1rem;
+  bottom: 1.5rem;
   transform: translateX(-50%);
   background: var(--цвет-поверхность);
-  border: 2px solid var(--цвет-ошибка);
+  border: 1px solid var(--цвет-ошибка);
   color: var(--цвет-текст);
-  padding: 0.7rem 1rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--радиус);
   z-index: 80;
   max-width: min(90vw, 420px);
-  box-shadow: var(--тень);
+  box-shadow: var(--тень-lg);
   animation: появление 0.2s ease;
 }
 
@@ -406,21 +409,24 @@ select {
 
 .кнопка {
   appearance: none;
-  border: 2px solid var(--цвет-сетка);
-  background: var(--цвет-сетка);
+  border: 1px solid var(--цвет-граница);
+  background: var(--цвет-поверхность);
   color: var(--цвет-текст);
-  padding: 0.6rem 0.9rem;
+  padding: 0.65rem 1.1rem;
+  border-radius: var(--радиус-sm);
   cursor: pointer;
-  box-shadow: var(--тень);
-  transition: transform 0.12s ease, background 0.12s ease;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
 }
 
 .кнопка:hover {
-  transform: translate(-1px, -1px);
+  background: var(--цвет-поверхность-2);
+  border-color: var(--цвет-граница-2);
 }
 
 .кнопка:focus-visible {
-  outline: 3px solid var(--цвет-фокус);
+  outline: 2px solid var(--цвет-фокус);
   outline-offset: 2px;
 }
 
@@ -428,30 +434,39 @@ select {
   background: var(--цвет-акцент);
   color: var(--цвет-акцент-текст);
   border-color: var(--цвет-акцент);
-  font-weight: 700;
+}
+
+.кнопка--главная:hover {
+  background: var(--цвет-акцент-hover);
+  border-color: var(--цвет-акцент-hover);
 }
 
 .кнопка--опасная {
   background: var(--цвет-занято);
+  color: #fff;
   border-color: var(--цвет-занято);
+}
+
+.кнопка--опасная:hover {
+  background: #dc2626;
 }
 
 .кнопка:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
 }
 
 .админ-триггер {
   position: absolute;
   top: 0;
   right: 0;
-  width: 28px;
-  height: 28px;
-  opacity: 0.08;
+  width: 32px;
+  height: 32px;
+  opacity: 0.06;
   background: transparent;
   border: 0;
   cursor: pointer;
+  border-radius: var(--радиус-sm);
 }
 
 .админ-триггер:focus-visible {
@@ -462,65 +477,80 @@ select {
 .навигация {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-top: 0.25rem;
+  gap: 0.35rem;
+  padding: 0.25rem;
+  background: var(--цвет-поверхность-2);
+  border: 1px solid var(--цвет-граница);
+  border-radius: var(--радиус);
+  width: fit-content;
 }
 
 .навигация__пункт {
   appearance: none;
-  border: 2px solid var(--цвет-сетка);
-  background: var(--цвет-поверхность);
-  color: var(--цвет-текст);
-  padding: 0.45rem 0.65rem;
+  border: none;
+  background: transparent;
+  color: var(--цвет-приглушённый);
+  padding: 0.55rem 1rem;
+  border-radius: calc(var(--радиус-sm) + 2px);
   cursor: pointer;
-  box-shadow: var(--тень);
-  font-size: 0.85rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .навигация__пункт:hover {
-  border-color: var(--цвет-фокус);
+  color: var(--цвет-текст);
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .навигация__пункт:focus-visible {
-  outline: 3px solid var(--цвет-фокус);
-  outline-offset: 2px;
+  outline: 2px solid var(--цвет-фокус);
+  outline-offset: 1px;
 }
 
 .навигация__пункт[aria-current='page'] {
-  background: var(--цвет-акцент);
-  color: var(--цвет-акцент-текст);
-  border-color: var(--цвет-акцент);
+  background: var(--цвет-поверхность);
+  color: var(--цвет-акцент);
+  box-shadow: var(--тень-sm);
+  font-weight: 600;
 }
 
 .страница {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
   position: relative;
+  background: var(--цвет-поверхность);
+  border: 1px solid var(--цвет-граница);
+  border-radius: var(--радиус-lg);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--тень-sm);
 }
 
 .страница__заголовок {
   margin: 0;
-  font-family: var(--шрифт-пиксель);
-  font-size: clamp(0.65rem, 2.4vw, 0.85rem);
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: var(--цвет-текст);
-  line-height: 1.5;
 }
 
 .страница__описание {
   margin: 0;
   color: var(--цвет-приглушённый);
-  font-size: 0.95rem;
+  font-size: 0.925rem;
   max-width: 42rem;
 }
 
 .пустой-блок {
-  border: 2px dashed var(--цвет-сетка);
-  padding: 1rem;
+  border: 1px dashed var(--цвет-граница);
+  border-radius: var(--радиус);
+  padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
   align-items: flex-start;
+  background: var(--цвет-поверхность-2);
 }
 
 .пустой-блок p {
@@ -534,7 +564,7 @@ select {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.65rem;
 }
 
 .список-броней__пункт {
@@ -543,24 +573,28 @@ select {
   gap: 0.75rem;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem;
-  background: var(--цвет-поверхность);
-  border: 2px solid var(--цвет-сетка);
-  box-shadow: var(--тень);
+  padding: 1rem 1.15rem;
+  background: var(--цвет-поверхность-2);
+  border: 1px solid var(--цвет-граница);
+  border-radius: var(--радиус);
+  transition: box-shadow 0.15s ease;
+}
+
+.список-броней__пункт:hover {
+  box-shadow: var(--тень-sm);
 }
 
 .список-броней__стол {
   margin: 0;
-  font-family: var(--шрифт-пиксель);
-  font-size: 0.6rem;
-  color: var(--цвет-акцент);
-  line-height: 1.5;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--цвет-текст);
 }
 
 .список-броней__мета {
-  margin: 0.3rem 0 0;
+  margin: 0.25rem 0 0;
   color: var(--цвет-приглушённый);
-  font-size: 0.85rem;
+  font-size: 0.875rem;
 }
 
 .зоны-статистика {
@@ -572,66 +606,66 @@ select {
 }
 
 .зоны-статистика__пункт {
-  background: var(--цвет-поверхность);
-  border: 2px solid var(--цвет-сетка);
-  padding: 0.75rem;
-  box-shadow: var(--тень);
+  background: var(--цвет-поверхность-2);
+  border: 1px solid var(--цвет-граница);
+  border-radius: var(--радиус);
+  padding: 1rem;
 }
 
 .зоны-статистика__шапка {
   display: flex;
   justify-content: space-between;
   gap: 0.5rem;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.925rem;
 }
 
 .зоны-статистика__полоса {
-  height: 12px;
-  background: #0f1220;
-  border: 1px solid var(--цвет-сетка);
+  height: 8px;
+  background: var(--цвет-граница);
+  border-radius: 999px;
+  overflow: hidden;
 }
 
 .зоны-статистика__полоса > span {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, #38b764, #f9c22b, #e43b44);
+  background: linear-gradient(90deg, #22c55e, #6366f1, #ef4444);
+  border-radius: 999px;
   max-width: 100%;
+  transition: width 0.3s ease;
 }
 
 .зоны-статистика__мета {
-  margin: 0.4rem 0 0;
+  margin: 0.45rem 0 0;
   font-size: 0.8rem;
   color: var(--цвет-приглушённый);
 }
 
-@media (min-width: 768px) {
-  .зоны-статистика {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
 .админ-панель {
-  border: 2px dashed var(--цвет-акцент);
-  padding: 0.75rem;
+  border: 1px dashed #f59e0b;
+  border-radius: var(--радиус);
+  padding: 1rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.65rem;
   align-items: center;
-  background: #1a1c2caa;
+  background: #fffbeb;
 }
 
 .админ-панель p {
   margin: 0;
   flex: 1 1 180px;
-  font-size: 0.85rem;
-  color: var(--цвет-приглушённый);
+  font-size: 0.875rem;
+  color: #92400e;
 }
 
 .подвал {
   margin-top: auto;
   padding-top: 0.5rem;
+  text-align: center;
   color: var(--цвет-приглушённый);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
 }
 
 .визуально-скрыто {
@@ -648,26 +682,22 @@ select {
 
 @media (min-width: 768px) {
   .приложение {
-    padding: 1.25rem 1.5rem 2rem;
-    gap: 1rem;
+    padding: 1.5rem 2rem 2.5rem;
+    gap: 1.5rem;
   }
 
   .оверлей {
     align-items: center;
   }
 
-  .модалка {
-    padding: 1.25rem;
+  .зоны-статистика {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1440px) {
   .приложение {
     padding: 2rem 0 3rem;
-  }
-
-  .шапка__бренд {
-    font-size: 1.15rem;
   }
 }
 

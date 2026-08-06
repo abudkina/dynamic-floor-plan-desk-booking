@@ -1,22 +1,14 @@
 import { DESK_TYPE_LABELS } from '../data/constants.js';
-import { PixelDeskSprite, PixelMapBackdrop } from '../components/PixelArt.jsx';
+import { ModernDeskSprite, ModernMapBackdrop } from '../components/OfficeMap.jsx';
 import { heatIntensity, zoneOccupancy } from '../utils/booking.js';
 
-/**
- * Цвет тепловой карты: холодно → горячо.
- * @param {number} intensity 0..1
- * @returns {string}
- */
 function heatColor(intensity) {
-  if (intensity >= 1) return '#e43b44';
-  if (intensity >= 0.66) return '#f9c22b';
-  if (intensity >= 0.33) return '#3cbcfc';
-  return '#38b764';
+  if (intensity >= 1) return '#ef4444';
+  if (intensity >= 0.66) return '#f59e0b';
+  if (intensity >= 0.33) return '#3b82f6';
+  return '#22c55e';
 }
 
-/**
- * Страница аналитики: зоны + тепловая карта.
- */
 export function AnalyticsPage({ desks, bookings, stats }) {
   const zones = zoneOccupancy(bookings, desks);
 
@@ -29,12 +21,12 @@ export function AnalyticsPage({ desks, bookings, stats }) {
         Тепловая карта на сегодня: зелёный — свободно, красный — занято.
       </p>
 
-      <div className="статистика" aria-live="polite">
-        <span>
-          Общая загрузка: <strong>{stats.процент}%</strong>
+      <div className="статистика-чипы" aria-live="polite">
+        <span className="статистика-чип">
+          Загрузка <strong>{stats.процент}%</strong>
         </span>
-        <span>
-          Занято: <strong>{stats.занято}</strong> / {desks.length}
+        <span className="статистика-чип">
+          Занято <strong>{stats.занято}</strong> / {desks.length}
         </span>
       </div>
 
@@ -66,12 +58,11 @@ export function AnalyticsPage({ desks, bookings, stats }) {
         <svg
           className="карта-svg"
           viewBox="0 0 320 200"
-          shapeRendering="crispEdges"
           role="img"
           aria-label="Тепловая карта занятости столов"
         >
           <title>Тепловая карта</title>
-          <PixelMapBackdrop showLabels={false} />
+          <ModernMapBackdrop showLabels={false} />
           {desks.map((desk) => {
             const intensity = heatIntensity(bookings, desk.id);
             const booking = bookings[desk.id];
@@ -81,7 +72,7 @@ export function AnalyticsPage({ desks, bookings, stats }) {
                 <title>
                   {desk.label}: {booking ? `занят (${booking.name})` : 'свободен'}
                 </title>
-                <PixelDeskSprite
+                <ModernDeskSprite
                   desk={desk}
                   occupied={Boolean(booking)}
                   heatFill={fill}
@@ -94,11 +85,11 @@ export function AnalyticsPage({ desks, bookings, stats }) {
 
       <div className="легенда" aria-hidden="true">
         <span className="легенда__пункт">
-          <span className="легенда__цвет" style={{ background: '#38b764' }} />
+          <span className="легенда__цвет легенда__цвет--свободно" />
           Свободно
         </span>
         <span className="легенда__пункт">
-          <span className="легенда__цвет" style={{ background: '#e43b44' }} />
+          <span className="легенда__цвет легенда__цвет--занято" />
           Занято
         </span>
       </div>
